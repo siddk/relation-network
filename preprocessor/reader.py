@@ -13,12 +13,14 @@ SPLIT_RE = re.compile('(\W+)?')
 tokenize = lambda x: [token.strip().lower() for token in re.split(SPLIT_RE, x) if token.strip()]
 
 
-def parse(mode, pik_path, word2id=None, a_word2id=None, max_len=0):
+def parse(mode, pik_path, voc_path, task_id=1):
     if mode == 'train':
         if os.path.exists(pik_path):
             with open(pik_path, 'r') as f:
-                S, S_len, Q, Q_len, A, word2id, a_word2id = pickle.load(f)
-                return S, S_len, Q, Q_len, word2id, a_word2id
+                S, S_len, Q, Q_len, A = pickle.load(f)
+            with open(voc_path, 'r') as f:
+                word2id, a_word2id, _, _ = pickle.load(f)
+            return S, S_len, Q, Q_len, word2id, a_word2id
         else:
             # Parse into Stories, Queries, Answers
             all_stories = []
@@ -41,9 +43,28 @@ def parse(mode, pik_path, word2id=None, a_word2id=None, max_len=0):
             S, S_len, Q, Q_len, A = vectorize(all_stories, word2id, a_word2id, max_s, max_q)
 
             with open(pik_path, 'w') as f:
-                pickle.dump((S, S_len, Q, Q_len, A, word2id, a_word2id), f)
+                pickle.dump((S, S_len, Q, Q_len, A), f)
+
+            with open(voc_path, 'w') as f:
+                pickle.dump((word2id, a_word2id, max_s, max_q), f)
 
             return S, S_len, Q, Q_len, A, word2id, a_word2id
+
+    elif mode == 'valid' or mode == 'test':
+        # Load Vocab, Metadata
+        with open(voc_path, 'r') as f:
+            word2id, a_word2id, max_s, max_q = pickle.load(f)
+
+        # Parse Task
+        with open('data/qa%d_%s.txt' % (task_id, mode), 'r') as f:
+            all_stories = parse_stories(f.readlines())
+
+        # Vectorize + Serialize
+        S, S_len, Q, Q_len, A = vectorize(all_stories, word2id, a_word2id, max_s, max_q)
+        with open(pik_path, 'w') as f:
+            pickle.dump((S, S_len, Q, Q_len, A), f)
+
+        return S, S_len, Q, Q_len, A, word2id, a_word2id
 
 
 def parse_stories(lines, truncate=20):
