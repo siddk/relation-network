@@ -102,3 +102,9 @@ ENV/
 
 # PyCharm
 .idea/
+
+# Ckpt
+ckpt/
+
+# Mac OS
+.DS_Store
