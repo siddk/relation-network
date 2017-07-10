@@ -6,6 +6,7 @@ Reads in and processes the bAbI Task files, serializing them for future referenc
 import numpy as np
 import os
 import pickle
+import random
 import re
 
 PAD_ID, PAD_TOKEN = 0, "<<pad>>"
@@ -20,13 +21,18 @@ def parse(mode, pik_path, voc_path, task_id=1):
                 S, S_len, Q, Q_len, A = pickle.load(f)
             with open(voc_path, 'r') as f:
                 word2id, a_word2id, _, _ = pickle.load(f)
-            return S, S_len, Q, Q_len, word2id, a_word2id
+            return S, S_len, Q, Q_len, A, word2id, a_word2id
         else:
             # Parse into Stories, Queries, Answers
             all_stories = []
             for i in range(1, 21):
                 with open('data/qa%d_train.txt' % i, 'r') as f:
                     all_stories += parse_stories(f.readlines())
+
+            # Shuffle All Stories
+            random.shuffle(all_stories)
+            random.shuffle(all_stories)
+            random.shuffle(all_stories)
 
             # Build Vocabulary
             vocab, answer_vocab, max_s, max_q = set(), set(), 0, 0

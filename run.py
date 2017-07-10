@@ -24,6 +24,12 @@ def main(_):
         S, S_len, Q, Q_len, A, word2id, a_word2id = parse("train",
                                                           pik_path=os.path.join(FLAGS.ckpt_dir, 'train', 'train.pik'),
                                                           voc_path=os.path.join(FLAGS.ckpt_dir, 'voc.pik'))
+
+        import ipdb
+        ipdb.set_trace()
+
+
+
     elif FLAGS.mode == "valid":
         S, S_len, Q, Q_len, A, _, _ = parse("valid",
                                             pik_path=os.path.join(FLAGS.ckpt_dir, 'valid', 'valid_%d.pik' % FLAGS.task),
