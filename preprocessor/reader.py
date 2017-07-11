@@ -113,5 +113,5 @@ def vectorize(s, word2id, answer_word2id, max_s, max_q, s_len=20):
         for j in range(len(query)):
             Q[i][j] = word2id[query[j]]
         Q_len[i] = query_len
-        A = answer_word2id[answer]
+        A[i] = answer_word2id[answer]
     return S, S_len, Q, Q_len, A
