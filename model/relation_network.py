@@ -178,6 +178,6 @@ class RelationNetwork:
                         self.session.run(self.epoch_step), batches, loss / batches, acc / batches)
 
             # Epoch Increment + Save
-            self.session.run(self.epoch_step)
+            self.session.run(self.epoch_increment)
             self.saver.save(self.session, self.ckpt_dir + "model.ckpt", global_step=self.epoch_step)
 
