@@ -60,6 +60,7 @@ class RelationNetwork:
 
         if self.restore:
             # Restore from Checkpoint
+            self.session.run(tf.global_variables_initializer())
             self.saver.restore(self.session, self.restore)
         else:
             # Initialize all Variables
@@ -180,4 +181,19 @@ class RelationNetwork:
             # Epoch Increment + Save
             self.session.run(self.epoch_increment)
             self.saver.save(self.session, self.ckpt_dir + "model.ckpt", global_step=self.epoch_step)
+
+    def eval(self, evalS, evalS_len, evalQ, evalQ_len, evalA):
+        """
+        Evaluate the model on the given data.
+
+        :param evalS: 3D Tensor object containing bAbI Stories [N, story_len, max_s]
+        :param evalS_len: 2D Tensor object containing story line lengths [N, story_len]
+        :param evalQ: 2D Tensor object containing queries [N, max_q]
+        :param evalQ_len: 1D Tensor object containing query lengths [N]
+        :param evalA: 1D Tensor object containing query answers [N]
+        :return Accuracy (as float)
+        """
+        accuracy = self.session.run(self.accuracy, feed_dict={self.XS: evalS, self.XS_len: evalS_len, self.XQ: evalQ,
+                                                              self.XQ_len: evalQ_len, self.YA: evalA})
+        return accuracy
 
