@@ -30,7 +30,7 @@ def main(_):
         print '[*] Creating Model!'
         rn = RelationNetwork(S, S_len, Q, Q_len, A, word2id, a_word2id, restore=False)
 
-        # Train for 5 Epochs
+        # Train for 50 Epochs
         print '[*] Training Model!'
         rn.fit(epochs=50)
 
